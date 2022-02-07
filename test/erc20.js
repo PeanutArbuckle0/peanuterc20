@@ -1,0 +1,42 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
+describe("Token contract", function () {
+
+    let NutBux;
+    let hardhatToken;
+    let founder;
+    let addr1;
+    let addr2;
+    let addrs;
+    var assert = require('chai').assert;
+
+    this.beforeEach(async function () {
+        NutBux = await ethers.getContractFactory("NutBux");
+        [founder, addr1, addr2, ...addrs] = await ethers.getSigners();
+
+        hhNutBux = await NutBux.deploy();
+    });
+
+    describe("Deployment", function () {
+        it("Should set the right founder", async function () {
+            expect(await hhNutBux.founder()).to.equal(founder.address);
+        });
+        it("Should assign the total supply of tokens to the founder", async function () {
+            const founderBalance = await hhNutBux.balanceOf(founder.address);
+            expect(await hhNutBux.totalSupply()).to.equal(founderBalance);
+        });
+    });
+    describe("Approval functions", function () {
+        it("Should be able to approve a token spend", async function () {
+            await hhNutBux.approve(addr1.address, 5000);
+            const allowance = await hhNutBux.allowance(founder.address, addr1.address);
+            expect(allowance).to.equal(5000);
+        });
+        it("Should revert if allowance is lower than attempted spend", async function() {
+            await hhNutBux.approve(addr1.address, 4999);
+            await expect(hhNutBux.transferFrom(founder.address, addr1.address, 5000)).to.be.reverted;
+            console.log()
+        });
+    });
+});
