@@ -2,15 +2,14 @@ import { ethers } from "hardhat";
 import { ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { Address } from "cluster";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Token", function () {
-    let founder: Address;
   beforeEach(async function () {
     let NutBuxFactory: ContractFactory = await ethers.getContractFactory("NutBux");
     let [founder, addr1, addr2, ...addrs] = await ethers.getSigners();
     let NutBux = await NutBuxFactory.deploy();
   });
-
   it("should set the correct owner", async function () {
     expect(await NutBux.founder()).to.equal(founder.address);
   });
